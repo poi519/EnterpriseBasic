@@ -52,8 +52,8 @@ class Parser {
     }
 
     public void reset() {
-        expressionStack.empty();
-        operatorStack.empty();
+        expressionStack = new Stack<BasicExpr>();
+        operatorStack = new Stack<ArithmeticOperator>();
     }
 
     public BasicExpr parse(ArrayList<Lexeme> lexemes) throws ParensDoNotMatchException {
