@@ -39,15 +39,22 @@ abstract class ArithmeticOperator implements Lexeme {
 }
 
 class LexLPar extends ArithmeticOperator { public Integer index() {return 1;}}
-class LexRPar extends ArithmeticOperator { public Integer index() {return 6;}}
+class LexRPar extends ArithmeticOperator { public Integer index() {return 5;}}
 class LexEOS extends ArithmeticOperator { public Integer index() {return 0;}}
 
 abstract class BinaryOperator extends ArithmeticOperator {
     public abstract BasicExpr makeExpression(BasicExpr l, BasicExpr r);
 }
 
-class LexPlus extends BinaryOperator {
+class LexGT extends BinaryOperator {
     public Integer index() {return 2;}
+
+    public BasicExpr makeExpression(BasicExpr l, BasicExpr r) {
+        return new GTExpr(l, r);
+    }
+}
+class LexPlus extends BinaryOperator {
+    public Integer index() {return 3;}
 
     public BasicExpr makeExpression(BasicExpr l, BasicExpr r) {
         return new SumExpr(l, r);

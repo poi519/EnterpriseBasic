@@ -4,24 +4,31 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+class CannotLexException extends Exception {
+    public CannotLexException() { super(); }
+}
+
 class Lexer {
-    public String text;
-    public Integer position;
+    private String text;
+    private Integer position;
     static Pattern  patWSpace = Pattern.compile("^\\s+"),
-                    patInt = Pattern.compile("^\\d+"),
+                    patInt  = Pattern.compile("^\\d+"),
                     patBool = Pattern.compile("^(false|true)"),
                     patPlus = Pattern.compile("^\\+"),
                     patMinus = Pattern.compile("^\\-"),
                     patTimes = Pattern.compile("^\\*"),
                     patLPar = Pattern.compile("^\\("),
-                    patRPar = Pattern.compile("^\\)");
+                    patRPar = Pattern.compile("^\\)"),
+                    patGT   = Pattern.compile("^>"),
+                    patLT   = Pattern.compile("^<"),
+                    patEq   = Pattern.compile("^=");
 
-    public Lexer(String t, Integer pos) {
+    public Lexer(String t) {
         text = t;
-        position = pos;
+        position = 0;
     }
 
-    public ArrayList<Lexeme> lex() {
+    public ArrayList<Lexeme> lex() throws CannotLexException {
         ArrayList<Lexeme> res = new ArrayList<Lexeme>();
         Matcher m;
         String rest;
@@ -74,6 +81,14 @@ class Lexer {
             if(m.find()) {
                 res.add(new LexRPar());
                 position += m.end();
+            } else {
+
+            m = patGT.matcher(rest);
+            if(m.find()) {
+                res.add(new LexGT());
+                position += m.end();
+            } else
+                throw new CannotLexException();
             }
             }
             }
