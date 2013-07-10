@@ -53,6 +53,23 @@ class LexGT extends BinaryOperator {
         return new GTExpr(l, r);
     }
 }
+
+class LexLT extends BinaryOperator {
+    public Integer index() {return 2;}
+
+    public BasicExpr makeExpression(BasicExpr l, BasicExpr r) {
+        return new LTExpr(l, r);
+    }
+}
+
+class LexEq extends BinaryOperator {
+    public Integer index() {return 2;}
+
+    public BasicExpr makeExpression(BasicExpr l, BasicExpr r) {
+        return new EqExpr(l, r);
+    }
+}
+
 class LexPlus extends BinaryOperator {
     public Integer index() {return 3;}
 

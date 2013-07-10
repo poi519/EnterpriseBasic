@@ -38,66 +38,62 @@ class Lexer {
 
             m = patWSpace.matcher(rest);
             if(m.find()) {
-                position += m.end();
+            //Do nothing
             } else {
 
             m = patInt.matcher(rest);
             if(m.find()) {
                 res.add(new LexInt(m.group()));
-                position += m.end();
             } else {
 
             m = patBool.matcher(rest);
             if(m.find()) {
                 res.add(new LexBool(m.group()));
-                position += m.end();
             } else {
 
             m = patPlus.matcher(rest);
             if(m.find()) {
                 res.add(new LexPlus());
-                position += m.end();
             } else {
 
             m = patMinus.matcher(rest);
             if(m.find()) {
                 res.add(new LexMinus());
-                position += m.end();
             } else {
 
             m = patTimes.matcher(rest);
             if(m.find()) {
                 res.add(new LexTimes());
-                position += m.end();
             } else {
 
             m = patLPar.matcher(rest);
             if(m.find()) {
                 res.add(new LexLPar());
-                position += m.end();
             } else {
 
             m = patRPar.matcher(rest);
             if(m.find()) {
                 res.add(new LexRPar());
-                position += m.end();
             } else {
 
             m = patGT.matcher(rest);
             if(m.find()) {
                 res.add(new LexGT());
-                position += m.end();
+            } else {
+
+            m = patLT.matcher(rest);
+            if(m.find()) {
+                res.add(new LexLT());
+            } else {
+
+            m = patEq.matcher(rest);
+            if(m.find()) {
+                res.add(new LexEq());
             } else
                 throw new CannotLexException();
-            }
-            }
-            }
-            }
-            }
-            }
-            }
-            }
-            }
+            }}}}}}}}}}
+            position += m.end();
+        }
         res.add(new LexEOS());
         return res;
     }

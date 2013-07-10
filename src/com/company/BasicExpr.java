@@ -25,6 +25,30 @@ class GTExpr extends BinaryExpr {
     }
 }
 
+class LTExpr extends BinaryExpr {
+    public LTExpr(BasicExpr l, BasicExpr r) {
+        super(l,r);
+    }
+
+    public BasicVal eval(BasicProgram program) {
+        Integer x = (((IntValue) left.eval(program)).value <
+                ((IntValue) right.eval(program)).value) ? -1 : 0;
+        return new IntValue(x);
+    }
+}
+
+class EqExpr extends BinaryExpr {
+    public EqExpr(BasicExpr l, BasicExpr r) {
+        super(l,r);
+    }
+
+    public BasicVal eval(BasicProgram program) {
+        Integer x = (((IntValue) left.eval(program)).value ==
+                ((IntValue) right.eval(program)).value) ? -1 : 0;
+        return new IntValue(x);
+    }
+}
+
 class SumExpr extends BinaryExpr {
     public SumExpr(BasicExpr l, BasicExpr r) {
         super(l, r);

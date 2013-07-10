@@ -14,11 +14,11 @@ class MalformedArithmeticExpressionException extends Exception {
 
 class ArithmeticExprParser {
     static Integer[][] table =
-           {{6,   1,   1,   1,   5},
-            {5,   1,   1,   1,   3},
-            {4,   1,   1,   1,   4},
-            {4,   1,   2,   1,   4},
-            {4,   1,   4,   2,   4}};
+           {{6,   1,   1,   1,   1,   5},
+            {5,   1,   1,   1,   1,   3},
+            {4,   1,   2,   1,   1,   4},
+            {4,   1,   4,   2,   1,   4},
+            {4,   1,   4,   4,   2,   4}};
 
     private Stack<BasicExpr> expressionStack = new Stack<BasicExpr>();
     private Stack<ArithmeticOperator> operatorStack = new Stack<ArithmeticOperator>();
