@@ -21,7 +21,17 @@ class Lexer {
                     patRPar = Pattern.compile("^\\)"),
                     patGT   = Pattern.compile("^>"),
                     patLT   = Pattern.compile("^<"),
-                    patEq   = Pattern.compile("^=");
+                    patEq   = Pattern.compile("^="),
+                    patLet  = Pattern.compile("^LET\\s"),
+                    patPrint= Pattern.compile("^PRINT\\s"),
+                    patInput= Pattern.compile("^INPUT\\s"),
+                    patList = Pattern.compile("^LIST(\\s|$)"),
+                    patRun = Pattern.compile("^RUN(\\s|$)"),
+                    patGoto= Pattern.compile("^GOTO\\s+"),
+                    patIf  = Pattern.compile("^IF\\s+"),
+                    patThen= Pattern.compile("^THEN\\s+"),
+                    patRem = Pattern.compile("^REM\\s(.+)"),
+                    patVarName = Pattern.compile("^\\p{Alpha}\\p{Alnum}*");
 
     public Lexer(String t) {
         text = t;
@@ -40,6 +50,51 @@ class Lexer {
             if(m.find()) {
             //Do nothing
             } else {
+
+            m = patList.matcher(rest);
+            if(m.find()) {
+                res.add(new LexList());
+            } else {
+
+            m = patRem.matcher(rest);
+            if(m.find()) {
+                res.add(new LexRem(m.group(1)));
+            } else {
+
+            m = patIf.matcher(rest);
+            if(m.find()) {
+                res.add(new LexIf());
+            } else {
+
+            m = patThen.matcher(rest);
+            if(m.find()) {
+                res.add(new LexThen());
+            } else {
+
+            m = patGoto.matcher(rest);
+            if(m.find()) {
+                res.add(new LexGoTo());
+            } else {
+
+            m = patRun.matcher(rest);
+            if(m.find()) {
+                res.add(new LexRun());
+            } else {
+
+            m = patLet.matcher(rest);
+            if(m.find()) {
+                res.add(new LexLet());
+            } else {
+
+            m = patPrint.matcher(rest);
+            if(m.find()) {
+                res.add(new LexPrint());
+            } else {
+
+            m = patInput.matcher(rest);
+            if(m.find()) {
+                res.add(new LexInput());
+            }else {
 
             m = patInt.matcher(rest);
             if(m.find()) {
@@ -89,9 +144,14 @@ class Lexer {
             m = patEq.matcher(rest);
             if(m.find()) {
                 res.add(new LexEq());
+            } else {
+
+            m = patVarName.matcher(rest);
+            if(m.find()) {
+                res.add(new LexVarName(m.group()));
             } else
                 throw new CannotLexException();
-            }}}}}}}}}}
+            }}}}}}}}}}}}}}}}}}}}
             position += m.end();
         }
         res.add(new LexEOS());

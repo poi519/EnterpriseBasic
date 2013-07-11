@@ -9,7 +9,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         Lexer l;
-        ArithmeticExprParser p = new ArithmeticExprParser();
+        BasicParser p = new BasicParser();
         BasicExpr expr;
         BasicProgram pr = new BasicProgram();
 
@@ -17,16 +17,22 @@ public class Main {
             System.out.print("> ");
             a = scanner.nextLine();
             l = new Lexer(a);
-            p.reset();
             try {
-                expr = p.parse(l.lex());
-                System.out.println(((IntValue) expr.eval(pr)).value);
+                expr = p.parseLine(l.lex());
+                if(expr instanceof LabelledLine) {
+                    pr.putLine(((LabelledLine) expr).number, a, ((LabelledLine) expr).expression);
+                } else
+                    System.out.println(expr.eval(pr).toString());
             } catch (ParensDoNotMatchException e) {
                 System.out.println("Unbalanced Parentheses");
             } catch (MalformedArithmeticExpressionException e) {
                 System.out.println("Malformed Arithmetic Expression");
             } catch (CannotLexException e) {
                 System.out.println("Incorrect String; Cannot split to lexemes");
+            } catch (ParseTimeException e) {
+                System.out.println("Parse time exception");
+            } catch (EvalTimeException e) {
+                System.out.println("Cannot evaluate this expression");
             }
         } while(!a.equals("exit"));
 

@@ -92,3 +92,28 @@ class LexTimes extends BinaryOperator {
         return new ProductExpr(l, r);
     }
 }
+
+class LexVarName implements Lexeme {
+    public String name;
+    public LexVarName(String n) {
+        name = n;
+    }
+}
+
+class Keyword implements Lexeme {}
+
+class LexLet extends Keyword {}
+class LexPrint extends Keyword {}
+class LexInput extends Keyword {}
+class LexList extends Keyword {}
+class LexRun extends Keyword {}
+class LexGoTo extends Keyword {}
+class LexIf extends Keyword {}
+class LexThen extends Keyword {}
+
+class LexRem extends Keyword {
+    public String remark;
+    public LexRem(String r) {
+        remark =r;
+    }
+}

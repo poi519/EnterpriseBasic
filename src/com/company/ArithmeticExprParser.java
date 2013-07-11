@@ -1,14 +1,18 @@
 package com.company;
 
-import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Stack;
 
-class ParensDoNotMatchException extends Exception {
+abstract class ParseTimeException extends Exception {
+    public ParseTimeException() { super(); }
+}
+
+class ParensDoNotMatchException extends ParseTimeException {
     public ParensDoNotMatchException() { super(); }
 }
 
-class MalformedArithmeticExpressionException extends Exception {
+class MalformedArithmeticExpressionException extends ParseTimeException {
     public MalformedArithmeticExpressionException() { super(); }
 }
 
@@ -55,16 +59,20 @@ class ArithmeticExprParser {
         }
     }
 
-    public void reset() {
+    private void reset() {
         expressionStack = new Stack<BasicExpr>();
         operatorStack = new Stack<ArithmeticOperator>();
     }
 
-    public BasicExpr parse(ArrayList<Lexeme> lexemes)
+    public BasicExpr parse(List<Lexeme> lexemes)
             throws ParensDoNotMatchException, MalformedArithmeticExpressionException {
+        if(!(lexemes.get(lexemes.size() - 1) instanceof LexEOS))
+            lexemes.add(new LexEOS());
         for(Lexeme lexeme : lexemes) {
            if(lexeme instanceof LexValue) {
-                expressionStack.push(((LexValue) lexeme).toValue());
+               expressionStack.push(((LexValue) lexeme).toValue());
+           } else if(lexeme instanceof LexVarName) {
+               expressionStack.push(new VarExpr(((LexVarName) lexeme).name));
            } else if(lexeme instanceof ArithmeticOperator) {
                 try {
                     changeState((ArithmeticOperator) lexeme);
@@ -73,6 +81,8 @@ class ArithmeticExprParser {
                 }
            }
         }
-        return expressionStack.peek();
+        BasicExpr res = expressionStack.peek();
+        this.reset();
+        return res;
     }
 }
