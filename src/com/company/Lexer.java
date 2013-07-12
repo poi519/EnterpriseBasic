@@ -8,30 +8,96 @@ class CannotLexException extends Exception {
     public CannotLexException() { super(); }
 }
 
+interface Rule<L extends Lexeme> {
+    public Pattern pattern();
+    public L lexeme(Matcher m);
+}
+
 class Lexer {
     private String text;
     private Integer position;
-    static Pattern  patWSpace = Pattern.compile("^\\s+"),
-                    patInt  = Pattern.compile("^\\d+"),
-                    patBool = Pattern.compile("^(false|true)"),
-                    patPlus = Pattern.compile("^\\+"),
-                    patMinus = Pattern.compile("^\\-"),
-                    patTimes = Pattern.compile("^\\*"),
-                    patLPar = Pattern.compile("^\\("),
-                    patRPar = Pattern.compile("^\\)"),
-                    patGT   = Pattern.compile("^>"),
-                    patLT   = Pattern.compile("^<"),
-                    patEq   = Pattern.compile("^="),
-                    patLet  = Pattern.compile("^LET\\s"),
-                    patPrint= Pattern.compile("^PRINT\\s"),
-                    patInput= Pattern.compile("^INPUT\\s"),
-                    patList = Pattern.compile("^LIST(\\s|$)"),
-                    patRun = Pattern.compile("^RUN(\\s|$)"),
-                    patGoto= Pattern.compile("^GOTO\\s+"),
-                    patIf  = Pattern.compile("^IF\\s+"),
-                    patThen= Pattern.compile("^THEN\\s+"),
-                    patRem = Pattern.compile("^REM\\s(.+)"),
-                    patVarName = Pattern.compile("^\\p{Alpha}\\p{Alnum}*");
+    static Rule<?>[] rules = {
+            new Rule<LexInt>() {
+                public Pattern pattern() {return Pattern.compile("^\\d+");}
+                public LexInt lexeme(Matcher m) {return new LexInt(m.group());}
+            },
+            new Rule<LexBool>() {
+                public Pattern pattern() {return Pattern.compile("^(false|true)");}
+                public LexBool lexeme(Matcher m) {return new LexBool(m.group());}
+            },
+            new Rule<LexPlus> (){
+                public Pattern pattern() {return Pattern.compile("^\\+");}
+                public LexPlus lexeme(Matcher m) {return new LexPlus();}
+            },
+            new Rule<LexMinus> (){
+                public Pattern pattern (){return Pattern.compile("^\\-");}
+                public LexMinus lexeme (Matcher m){return new LexMinus();}
+            },
+            new Rule<LexTimes> (){
+                public Pattern pattern (){return Pattern.compile("^\\*");}
+                public LexTimes lexeme (Matcher m){return new LexTimes();}
+            },
+            new Rule<LexLPar> (){
+                public Pattern pattern(){return Pattern.compile("^\\(");}
+                public LexLPar lexeme(Matcher m){return new LexLPar();}
+            },
+            new Rule<LexRPar> (){
+                public Pattern pattern (){return Pattern.compile("^\\)");}
+                public LexRPar lexeme (Matcher m){return new LexRPar();}
+            },
+            new Rule<LexGT> (){
+                public Pattern pattern(){return Pattern.compile("^>");}
+                public LexGT lexeme(Matcher m){return new LexGT();}
+            },
+            new Rule<LexLT> (){
+                public Pattern pattern (){return Pattern.compile("^<");}
+                public LexLT lexeme (Matcher m){return new LexLT();}
+            },
+            new Rule<LexEq> (){
+                public Pattern pattern(){return Pattern.compile("^=");}
+                public LexEq lexeme (Matcher m){return new LexEq();}
+            },
+            new Rule<LexLet> (){
+                public Pattern pattern (){return Pattern.compile("^LET\\s");}
+                public LexLet lexeme(Matcher m){return new LexLet();}
+            },
+            new Rule<LexPrint> (){
+                public Pattern pattern (){return Pattern.compile("^PRINT\\s");}
+                public LexPrint lexeme (Matcher m){return new LexPrint();}
+            },
+            new Rule<LexInput> (){
+                public Pattern pattern (){return Pattern.compile("^INPUT\\s");}
+                public LexInput lexeme (Matcher m){return new LexInput();}
+            },
+            new Rule<LexList> (){
+                public Pattern pattern (){return Pattern.compile("^LIST(\\s|$)");}
+                public LexList lexeme (Matcher m){return new LexList();}
+            },
+            new Rule<LexRun> (){
+                public Pattern pattern (){return Pattern.compile("^RUN(\\s|$)");}
+                public LexRun lexeme (Matcher m){return new LexRun();}
+            },
+            new Rule<LexGoTo> (){
+                public Pattern pattern (){return Pattern.compile("^GOTO\\s+");}
+                public LexGoTo lexeme (Matcher m){return new LexGoTo();}
+            },
+            new Rule<LexIf> (){
+                public Pattern pattern (){return Pattern.compile("^IF\\s+");}
+                public LexIf lexeme (Matcher m){return new LexIf();}
+            },
+            new Rule<LexThen> (){
+                public Pattern pattern (){return Pattern.compile("^THEN\\s+");}
+                public LexThen lexeme (Matcher m){return new LexThen();}
+            },
+            new Rule<LexRem> (){
+                public Pattern pattern (){return Pattern.compile("^REM\\s(.+)");}
+                public LexRem lexeme(Matcher m) {return new LexRem(m.group(1));}
+            },
+            new Rule<LexVarName> (){
+                public Pattern pattern (){return Pattern.compile("^\\p{Alpha}\\p{Alnum}*") ;}
+                public LexVarName lexeme (Matcher m){return new LexVarName(m.group());}
+            }
+    };
 
     public Lexer(String t) {
         text = t;
@@ -45,113 +111,18 @@ class Lexer {
 
         while(position < text.length()) {
             rest = text.substring(position);
-
-            m = patWSpace.matcher(rest);
+            m = Pattern.compile("^\\s+").matcher(rest);
             if(m.find()) {
             //Do nothing
             } else {
-
-            m = patList.matcher(rest);
-            if(m.find()) {
-                res.add(new LexList());
-            } else {
-
-            m = patRem.matcher(rest);
-            if(m.find()) {
-                res.add(new LexRem(m.group(1)));
-            } else {
-
-            m = patIf.matcher(rest);
-            if(m.find()) {
-                res.add(new LexIf());
-            } else {
-
-            m = patThen.matcher(rest);
-            if(m.find()) {
-                res.add(new LexThen());
-            } else {
-
-            m = patGoto.matcher(rest);
-            if(m.find()) {
-                res.add(new LexGoTo());
-            } else {
-
-            m = patRun.matcher(rest);
-            if(m.find()) {
-                res.add(new LexRun());
-            } else {
-
-            m = patLet.matcher(rest);
-            if(m.find()) {
-                res.add(new LexLet());
-            } else {
-
-            m = patPrint.matcher(rest);
-            if(m.find()) {
-                res.add(new LexPrint());
-            } else {
-
-            m = patInput.matcher(rest);
-            if(m.find()) {
-                res.add(new LexInput());
-            }else {
-
-            m = patInt.matcher(rest);
-            if(m.find()) {
-                res.add(new LexInt(m.group()));
-            } else {
-
-            m = patBool.matcher(rest);
-            if(m.find()) {
-                res.add(new LexBool(m.group()));
-            } else {
-
-            m = patPlus.matcher(rest);
-            if(m.find()) {
-                res.add(new LexPlus());
-            } else {
-
-            m = patMinus.matcher(rest);
-            if(m.find()) {
-                res.add(new LexMinus());
-            } else {
-
-            m = patTimes.matcher(rest);
-            if(m.find()) {
-                res.add(new LexTimes());
-            } else {
-
-            m = patLPar.matcher(rest);
-            if(m.find()) {
-                res.add(new LexLPar());
-            } else {
-
-            m = patRPar.matcher(rest);
-            if(m.find()) {
-                res.add(new LexRPar());
-            } else {
-
-            m = patGT.matcher(rest);
-            if(m.find()) {
-                res.add(new LexGT());
-            } else {
-
-            m = patLT.matcher(rest);
-            if(m.find()) {
-                res.add(new LexLT());
-            } else {
-
-            m = patEq.matcher(rest);
-            if(m.find()) {
-                res.add(new LexEq());
-            } else {
-
-            m = patVarName.matcher(rest);
-            if(m.find()) {
-                res.add(new LexVarName(m.group()));
-            } else
-                throw new CannotLexException();
-            }}}}}}}}}}}}}}}}}}}}
+                for(Rule<?> rule : rules) {
+                    m = rule.pattern().matcher(rest);
+                    if(m.find()) {
+                        res.add(rule.lexeme(m));
+                        break;
+                    }
+                }
+            }
             position += m.end();
         }
         res.add(new LexEOS());
